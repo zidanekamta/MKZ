@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Commandes reçues</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Toutes les commandes qui contiennent tes produits.
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/dashboard/">← Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px;">
+  {% for g in grouped %}
+    <div class="card" style="box-shadow:none;">
+      <div class="muted">Commande #{{ g.order.id }} • {{ g.order.created_at }}</div>
+      <div style="margin-top:8px;">
+        <span class="tag">Statut: {{ g.order.get_status_display }}</span>
+        <span class="tag">Total: {{ g.order.total_fcfa }} FCFA</span>
+      </div>
+
+      <div style="margin-top:10px;" class="muted">
+        Articles chez toi: {{ g.items|length }}
+      </div>
+
+      <div style="margin-top:12px;">
+        <a class="btn btn-primary" href="/dashboard/orders/{{ g.order.id }}/">Voir détails</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card">
+      <p class="muted" style="margin:0;">Aucune commande reçue pour le moment.</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

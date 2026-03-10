@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Commande #{{ order.id }}</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Statut : <b>{{ order.get_status_display }}</b> • Total : <b>{{ order.total_fcfa }} FCFA</b>
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/orders/">← Mes commandes</a>
+      <a class="btn" href="/annonces/">Continuer les achats</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Livraison</h3>
+    <p class="muted" style="margin:0;"><b>Ville:</b> {{ order.delivery_city }}</p>
+    <p class="muted" style="margin:8px 0 0;"><b>Adresse:</b> {{ order.delivery_address }}</p>
+    <p class="muted" style="margin:8px 0 0;"><b>Téléphone:</b> {{ order.delivery_phone }}</p>
+    {% if order.note %}
+      <p class="muted" style="margin:8px 0 0;"><b>Note:</b> {{ order.note }}</p>
+    {% endif %}
+
+    <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+      <p class="muted" style="margin:0;">
+        Paiement : <b>à la livraison / WhatsApp</b> (Phase 1).
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Articles</h3>
+    {% for it in items %}
+      <div style="border-top:1px solid rgba(255,255,255,.10); padding-top:10px; margin-top:10px;">
+        <b>{{ it.listing.title }}</b>
+        <div class="muted">{{ it.quantity }} × {{ it.unit_price_fcfa }} FCFA</div>
+        <div class="muted">Éleveur : {{ it.breeder.username }}</div>
+
+        <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn" href="/annonces/{{ it.listing.id }}/">Voir l’annonce</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="muted" style="margin:0;">Aucun article.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

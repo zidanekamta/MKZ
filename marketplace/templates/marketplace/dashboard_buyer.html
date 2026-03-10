@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Header -->
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Dashboard Acheteur</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Bienvenue <b>{{ user.username }}</b> — trouvez des annonces, passez commande et suivez vos achats.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/annonces/">Explorer les annonces</a>
+      <a class="btn" href="/cart/">Mon panier</a>
+      <a class="btn" href="/orders/">Mes commandes</a>
+    </div>
+  </div>
+
+  <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <span class="tag">📍 {{ profile.city|default:"Ville non renseignée" }}</span>
+    <span class="tag">📞 {{ profile.phone|default:"Téléphone non renseigné" }}</span>
+    <span class="tag">⭐ Notes & avis</span>
+  </div>
+
+  {% if not profile.city or not profile.phone %}
+    <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+      <p class="muted" style="margin:0;">
+        Astuce : complète ta <b>ville</b> et ton <b>téléphone</b> pour faciliter la livraison et le contact WhatsApp.
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- ✅ Dernières commandes -->
+<div class="card" style="margin-top:12px;">
+  <div class="page-head" style="margin:0 0 10px;">
+    <div>
+      <h3 style="margin:0;">Dernières commandes</h3>
+      <p class="muted" style="margin:6px 0 0;">Tes 3 dernières commandes enregistrées.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/orders/">Voir toutes</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    {% for o in recent_orders %}
+      <div class="card" style="box-shadow:none;">
+        <div class="muted" style="font-size:13px;">Commande #{{ o.id }}</div>
+        <div style="font-size:18px; font-weight:800; margin-top:6px;">{{ o.total_fcfa }} FCFA</div>
+        <div class="muted" style="margin-top:6px;">{{ o.get_status_display }}</div>
+        <div class="muted" style="margin-top:6px;">{{ o.created_at }}</div>
+
+        <div style="margin-top:12px;">
+          <a class="btn" href="/orders/{{ o.id }}/">Détails</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="box-shadow:none;">
+        <p class="muted" style="margin:0;">
+          Tu n’as pas encore de commande. Va sur <a href="/annonces/">Annonces</a> et ajoute au panier.
+        </p>
+        <div style="margin-top:10px;">
+          <a class="btn btn-primary" href="/annonces/">Explorer les annonces</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Actions rapides -->
+<div class="grid" style="margin-top:12px;">
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Découvrir</div>
+    <div style="font-size:18px; font-weight:800; margin-top:8px;">Annonces disponibles</div>
+    <p class="muted" style="margin:8px 0 0;">
+      Filtre par ville, type (vivant/viande) et prix.
+    </p>
+    <div style="margin-top:12px;">
+      <a class="btn" href="/annonces/">Voir les annonces</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Commander</div>
+    <div style="font-size:18px; font-weight:800; margin-top:8px;">Panier & commande</div>
+    <p class="muted" style="margin:8px 0 0;">
+      Ajoute au panier depuis une annonce, puis confirme ta commande.
+    </p>
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn" href="/cart/">Panier</a>
+      <a class="btn" href="/orders/">Mes commandes</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Confiance</div>
+    <div style="font-size:18px; font-weight:800; margin-top:8px;">Avis / notes</div>
+    <p class="muted" style="margin:8px 0 0;">
+      Après achat, laisse une note et un avis sur l’annonce.
+    </p>
+    <div style="margin-top:12px;">
+      <span class="tag">✅ Communauté MKZ</span>
+    </div>
+  </div>
+</div>
+
+<!-- Comment acheter -->
+<div class="card" style="margin-top:12px;">
+  <h3 style="margin:0 0 6px;">Comment acheter sur MKZ</h3>
+  <p class="muted" style="margin:0 0 12px;">
+    Phase actuelle : paiement <b>à la livraison</b> / WhatsApp — la commande est enregistrée pour le suivi.
+  </p>
+
+  <div class="grid">
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">1</div>
+      <h4 style="margin:10px 0 6px;">Choisir une annonce</h4>
+      <p class="muted" style="margin:0;">Va dans <a href="/annonces/">Annonces</a>, filtre par ville et type.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">2</div>
+      <h4 style="margin:10px 0 6px;">Ajouter au panier</h4>
+      <p class="muted" style="margin:0;">Clique “Acheter maintenant” et indique la quantité.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">3</div>
+      <h4 style="margin:10px 0 6px;">Confirmer la commande</h4>
+      <p class="muted" style="margin:0;">Renseigne l’adresse et le téléphone, puis confirme.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">4</div>
+      <h4 style="margin:10px 0 6px;">WhatsApp & livraison</h4>
+      <p class="muted" style="margin:0;">Contacte l’éleveur sur WhatsApp pour finaliser la livraison.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+    <p class="muted" style="margin:0;">
+      Prochainement : paiement <b>MTN MoMo</b> / <b>Orange Money</b> intégré (Phase 2).
+    </p>
+  </div>
+</div>
+
+<!-- CTA final -->
+<div class="card" style="margin-top:12px;">
+  <div class="grid" style="align-items:center;">
+    <div>
+      <h3 style="margin:0 0 6px;">Prêt à acheter ?</h3>
+      <p class="muted" style="margin:0;">
+        Explore le marché et ajoute tes produits au panier.
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/annonces/">Explorer les annonces</a>
+      <a class="btn" href="/cart/">Ouvrir le panier</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

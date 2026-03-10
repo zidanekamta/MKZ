@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Panier</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">Vérifie tes articles puis passe la commande.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/annonces/">Continuer les achats</a>
+      {% if items %}
+        <a class="btn btn-primary" href="/checkout/">Passer commande</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  {% for it in items %}
+    <div style="border-top:1px solid rgba(255,255,255,.10); padding-top:10px; margin-top:10px;">
+      <b>{{ it.listing.title }}</b>
+      <div class="muted">{{ it.quantity }} × {{ it.listing.price_fcfa }} FCFA</div>
+      <div style="margin-top:8px;">
+        <a class="btn" href="/annonces/{{ it.listing.id }}/">Voir</a>
+        <a class="btn" href="/cart/remove/{{ it.listing.id }}/">Retirer</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted" style="margin:0;">Panier vide.</p>
+    <div style="margin-top:10px;">
+      <a class="btn btn-primary" href="/annonces/">Voir les annonces</a>
+    </div>
+  {% endfor %}
+
+  {% if items %}
+    <hr style="border-color:rgba(255,255,255,.12); margin:14px 0;">
+    <p><b>Total :</b> {{ subtotal }} FCFA</p>
+  {% endif %}
+</div>
+
+{% endblock %}

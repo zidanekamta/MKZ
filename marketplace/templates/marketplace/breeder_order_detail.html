@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Commande #{{ order.id }}</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Livraison : {{ order.delivery_city }} • {{ order.delivery_address }} • {{ order.delivery_phone }}
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/dashboard/orders/">← Retour</a>
+      {% if buyer_whatsapp %}
+        <a class="btn btn-primary" href="{{ buyer_whatsapp }}" target="_blank">Contacter l’acheteur (WhatsApp)</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <h3 style="margin:0 0 10px;">Tes articles dans cette commande</h3>
+
+  {% for it in items %}
+    <div style="border-top:1px solid rgba(255,255,255,.10); padding-top:10px; margin-top:10px;">
+      <b>{{ it.listing.title }}</b>
+      <div class="muted">{{ it.quantity }} × {{ it.unit_price_fcfa }} FCFA</div>
+      <div style="margin-top:8px;">
+        <span class="tag">Statut: {{ it.get_status_display }}</span>
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn" href="/annonces/{{ it.listing.id }}/">Voir l’annonce</a>
+
+        <form method="post" action="/dashboard/orders/item/{{ it.id }}/FULFILLED/" style="margin:0;">
+          {% csrf_token %}
+          <button class="btn btn-primary" type="submit">Marquer livré</button>
+        </form>
+
+        <form method="post" action="/dashboard/orders/item/{{ it.id }}/CANCELLED/" style="margin:0;">
+          {% csrf_token %}
+          <button class="btn" type="submit" onclick="return confirm('Annuler cet article ?')">Annuler</button>
+        </form>
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted" style="margin:0;">Aucun article.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">DM avec {{ other.username }}</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">Mentions: @username • Images • Signalement</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/community/dm/">← Inbox</a>
+      <a class="btn" href="/community/notifications/">Notifications</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <div class="card" style="min-height:520px;">
+    <div id="mkz-dm" style="height:460px; overflow:auto; padding-right:6px; display:flex; flex-direction:column; gap:10px;">
+      {% for m in messages %}
+        <div data-id="{{ m.id }}" class="card" style="box-shadow:none;">
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div><b>{{ m.sender.username }}</b></div>
+            <div class="muted" style="font-size:12px;">{{ m.created_at }}</div>
+          </div>
+          <div class="muted" style="margin-top:8px; white-space:pre-wrap;">{{ m.content }}</div>
+
+          {% if m.images.all %}
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+              {% for img in m.images.all %}
+                <a href="{{ img.image.url }}" target="_blank">
+                  <img src="{{ img.image.url }}" style="width:120px; height:90px; object-fit:cover; border-radius:12px;">
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <form method="post" action="/community/dm/message/{{ m.id }}/report/" style="margin:0;">
+              {% csrf_token %}
+              <input type="hidden" name="reason" value="Contenu inapproprié">
+              <button class="btn" type="submit">Signaler</button>
+            </form>
+
+            {% if user.is_staff or user.is_superuser or user.id == m.sender.id %}
+              <form method="post" action="/community/dm/message/{{ m.id }}/delete/" style="margin:0;">
+                {% csrf_token %}
+                <button class="btn" type="submit" onclick="return confirm('Supprimer ce message ?')">Supprimer</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data" style="margin-top:12px;">
+      {% csrf_token %}
+      <label class="muted">Message (@username)</label>
+      <textarea id="mkz-dm-input" name="content" placeholder="Tape ton message…" style="margin-top:6px;"></textarea>
+
+      <label class="muted" style="margin-top:10px;">Images</label>
+      <input type="file" name="images" accept="image/*" multiple style="margin-top:6px;">
+
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" type="submit">Envoyer</button>
+        <button class="btn" type="button" onclick="document.getElementById('mkz-dm-input').value='';">Effacer</button>
+      </div>
+    </form>
+  </div>
+
+  <div>
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Astuce</h3>
+      <p class="muted" style="margin:0;">Les messages se rafraîchissent automatiquement toutes les 3 secondes.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const chat = document.getElementById("mkz-dm");
+  function lastId(){
+    const items = chat.querySelectorAll("[data-id]");
+    if(!items.length) return 0;
+    return parseInt(items[items.length - 1].getAttribute("data-id") || "0");
+  }
+  function scrollBottom(){ chat.scrollTop = chat.scrollHeight; }
+  scrollBottom();
+
+  function renderTextWithMentions(text){
+    const frag = document.createDocumentFragment();
+    const parts = String(text || "").split(/(@[A-Za-z0-9_\.]{3,30})/g);
+    for(const part of parts){
+      if(part.startsWith("@")){
+        const b = document.createElement("b");
+        b.textContent = part;
+        frag.appendChild(b);
+      } else {
+        frag.appendChild(document.createTextNode(part));
+      }
+    }
+    return frag;
+  }
+
+  async function poll(){
+    const after = lastId();
+    const url = "/community/dm/{{ conv.id }}/messages.json?after=" + after;
+    try{
+      const res = await fetch(url, {headers: {"X-Requested-With":"XMLHttpRequest"}});
+      const data = await res.json();
+      if(!data.ok) return;
+
+      if(data.messages && data.messages.length){
+        for(const m of data.messages){
+          const wrap = document.createElement("div");
+          wrap.className = "card";
+          wrap.style.boxShadow = "none";
+          wrap.setAttribute("data-id", String(m.id));
+
+          const top = document.createElement("div");
+          top.style.display="flex";
+          top.style.justifyContent="space-between";
+          top.style.gap="10px";
+          top.style.flexWrap="wrap";
+
+          const left = document.createElement("div");
+          const name = document.createElement("b");
+          name.textContent = m.sender;
+          left.appendChild(name);
+
+          const time = document.createElement("div");
+          time.className="muted";
+          time.style.fontSize="12px";
+          time.textContent = m.created_at;
+
+          top.appendChild(left);
+          top.appendChild(time);
+
+          const body = document.createElement("div");
+          body.className="muted";
+          body.style.marginTop="8px";
+          body.style.whiteSpace="pre-wrap";
+          body.appendChild(renderTextWithMentions(m.content));
+
+          wrap.appendChild(top);
+          wrap.appendChild(body);
+
+          if(m.images && m.images.length){
+            const imgs = document.createElement("div");
+            imgs.style.marginTop="10px";
+            imgs.style.display="flex";
+            imgs.style.gap="10px";
+            imgs.style.flexWrap="wrap";
+            for(const u of m.images){
+              const a = document.createElement("a");
+              a.href = u; a.target = "_blank";
+              const im = document.createElement("img");
+              im.src = u;
+              im.style.width="120px";
+              im.style.height="90px";
+              im.style.objectFit="cover";
+              im.style.borderRadius="12px";
+              a.appendChild(im);
+              imgs.appendChild(a);
+            }
+            wrap.appendChild(imgs);
+          }
+
+          chat.appendChild(wrap);
+        }
+        scrollBottom();
+      }
+    }catch(e){}
+  }
+
+  setInterval(poll, 3000);
+})();
+</script>
+
+{% endblock %}

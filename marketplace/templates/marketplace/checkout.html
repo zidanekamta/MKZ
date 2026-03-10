@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Passer la commande</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Choisis la livraison et la méthode de paiement. La commande sera enregistrée pour le suivi.
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/cart/">← Retour panier</a>
+      <a class="btn" href="/orders/">Mes commandes</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <!-- FORM -->
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Détails livraison</h3>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <label class="muted">Ville</label>
+      <input name="delivery_city" placeholder="Ex: Douala" required style="margin:6px 0 12px;">
+
+      <label class="muted">Adresse / Quartier</label>
+      <input name="delivery_address" placeholder="Ex: Bonamoussadi..." required style="margin:6px 0 12px;">
+
+      <label class="muted">Téléphone (WhatsApp)</label>
+      <input name="delivery_phone" placeholder="Ex: 2376XXXXXXX" required style="margin:6px 0 12px;">
+
+      <label class="muted">Note (optionnel)</label>
+      <textarea name="note" placeholder="Ex: Livraison matin / appel avant..." style="margin:6px 0 12px;"></textarea>
+
+      <!-- ✅ Paiement -->
+      <h3 style="margin:18px 0 10px;">Paiement</h3>
+
+      <label class="muted">Méthode de paiement</label>
+      <select id="mkz-payment-method" name="payment_method" style="margin:6px 0 12px;">
+        <option value="COD">À la livraison / WhatsApp (Phase 1)</option>
+        <option value="MTN_MOMO">MTN MoMo (payer maintenant — Phase 2)</option>
+        <option value="ORANGE_OM">Orange Money (payer maintenant — Phase 2)</option>
+      </select>
+
+      <!-- Champ payeur (affiché seulement si paiement online) -->
+      <div id="mkz-payer-box" style="display:none;">
+        <label class="muted">Numéro du payeur (si paiement maintenant)</label>
+        <input name="payer_msisdn" placeholder="Ex: 2376XXXXXXX" style="margin:6px 0 12px;">
+        <div class="muted" style="font-size:12px; margin-top:-6px;">
+          MTN/Orange : tu recevras une demande sur ton téléphone à valider.
+        </div>
+
+        <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+          <p class="muted" style="margin:0;">
+            En local, les callbacks automatiques peuvent ne pas marcher. Après validation, tu pourras vérifier le statut.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" type="submit">✅ Confirmer la commande</button>
+        <a class="btn" href="/cart/">Annuler</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESUME -->
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Résumé</h3>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <span class="tag">Articles : {{ items|length }}</span>
+      <span class="tag">Total : {{ subtotal }} FCFA</span>
+    </div>
+
+    <div style="font-size:26px; font-weight:900; margin-top:12px;">
+      {{ subtotal }} FCFA
+    </div>
+
+    <div class="card" style="margin-top:12px; box-shadow:none;">
+      <h4 style="margin:0 0 8px;">Comment ça se passe ?</h4>
+      <p class="muted" style="margin:0;">
+        • Phase 1 : paiement à la livraison / WhatsApp<br>
+        • Phase 2 : MoMo / Orange Money (paiement maintenant)
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+      <p class="muted" style="margin:0;">
+        Après confirmation, tu peux contacter l’éleveur sur WhatsApp depuis la page de l’annonce si nécessaire.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const select = document.getElementById("mkz-payment-method");
+    const box = document.getElementById("mkz-payer-box");
+
+    function refresh(){
+      const v = select.value;
+      box.style.display = (v === "MTN_MOMO" || v === "ORANGE_OM") ? "block" : "none";
+    }
+
+    select.addEventListener("change", refresh);
+    refresh();
+  })();
+</script>
+
+{% endblock %}

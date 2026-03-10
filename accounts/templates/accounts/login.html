@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Connexion</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Accède à ton compte MKZ pour acheter, publier et suivre tes commandes.
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/">← Accueil</a>
+      <a class="btn" href="/annonces/">Voir les annonces</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <!-- Form -->
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Se connecter</h3>
+    <form method="post">
+      {% csrf_token %}
+
+      <label class="muted">Nom d’utilisateur</label>
+      <input name="username" placeholder="Ex: mkzlapin1" required style="margin:6px 0 12px;">
+
+      <label class="muted">Mot de passe</label>
+      <input id="mkz-pass" name="password" type="password" placeholder="••••••••" required style="margin:6px 0 10px;">
+
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <button class="btn" type="button" onclick="
+          const p=document.getElementById('mkz-pass');
+          p.type = (p.type==='password') ? 'text' : 'password';
+          this.textContent = (p.type==='password') ? 'Afficher' : 'Masquer';
+        ">Afficher</button>
+
+        <span class="muted" style="font-size:12px;">
+          Astuce : si tu oublies ton mot de passe, l’admin peut le réinitialiser (phase MVP).
+        </span>
+      </div>
+
+      <button class="btn btn-primary" type="submit">✅ Se connecter</button>
+
+      <div style="margin-top:12px;" class="muted">
+        Pas encore de compte ?
+        <a href="/accounts/signup/"><b>Créer un compte</b></a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Side info -->
+  <div>
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Pourquoi se connecter ?</h3>
+      <p class="muted" style="margin:0;">
+        • Ajouter au panier<br>
+        • Passer commande (paiement à la livraison)<br>
+        • Laisser des avis & notes<br>
+        • Publier des annonces (éleveurs)
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <h3 style="margin:0 0 10px;">Sécurité</h3>
+      <p class="muted" style="margin:0;">
+        Ne partage jamais ton mot de passe. MKZ ne te demandera jamais ton mot de passe sur WhatsApp.
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

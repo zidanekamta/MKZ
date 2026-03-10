@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Header / Profil -->
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Dashboard Éleveur</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Bienvenue <b>{{ user.username }}</b> — gérez vos annonces et vos ventes.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/dashboard/annonces/new/">➕ Publier une annonce</a>
+      <a class="btn" href="/dashboard/orders/">📦 Commandes reçues</a>
+      <a class="btn" href="/annonces/">Voir le marché</a>
+    </div>
+  </div>
+
+  <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    {% if profile.verified %}
+      <span class="tag ok">✅ Éleveur vérifié</span>
+    {% else %}
+      <span class="tag">⏳ Non vérifié</span>
+    {% endif %}
+
+    <span class="tag">📍 {{ profile.city|default:"Ville non renseignée" }}</span>
+    <span class="tag">📞 {{ profile.phone|default:"Téléphone non renseigné" }}</span>
+  </div>
+
+  {% if not profile.verified %}
+    <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+      <p class="muted" style="margin:0;">
+        Astuce : pour être <b>vérifié</b>, ajoute des infos claires (ville, téléphone, photos),
+        puis contacte l’admin MKZ afin d’obtenir le badge “Éleveur vérifié”.
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- KPI / Stats rapides -->
+<div class="grid" style="margin-top:12px;">
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Annonces</div>
+    <div style="font-size:28px; font-weight:800; margin-top:6px;">
+      {{ my_listings|length }}
+    </div>
+    <div class="muted">Total publiées</div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Commandes reçues</div>
+    <div style="font-size:28px; font-weight:800; margin-top:6px;">
+      {{ received_orders_count|default:"0" }}
+    </div>
+    <div class="muted">Commandes avec tes produits</div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Conseil</div>
+    <div style="font-size:16px; font-weight:800; margin-top:10px;">
+      Plus de ventes = bonnes photos + prix clair
+    </div>
+    <div class="muted">Ajoute 3–5 photos par annonce</div>
+  </div>
+</div>
+
+<!-- Aperçu commandes reçues -->
+<div class="card" style="margin-top:12px;">
+  <div class="page-head" style="margin:0 0 10px;">
+    <div>
+      <h3 style="margin:0;">Aperçu — Commandes reçues</h3>
+      <p class="muted" style="margin:6px 0 0;">Les dernières commandes qui contiennent tes produits.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/dashboard/orders/">Voir toutes</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    {% for o in recent_received %}
+      <div class="card" style="box-shadow:none;">
+        <div class="muted" style="font-size:13px;">Commande #{{ o.id }} • {{ o.created_at }}</div>
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+          <span class="tag">Total: {{ o.total_fcfa }} FCFA</span>
+          <span class="tag">Statut: {{ o.get_status_display }}</span>
+        </div>
+        <div style="margin-top:12px;">
+          <a class="btn" href="/dashboard/orders/{{ o.id }}/">Ouvrir</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="box-shadow:none;">
+        <p class="muted" style="margin:0;">Aucune commande reçue pour le moment.</p>
+        <p class="muted" style="margin:8px 0 0;">Quand un acheteur commande tes produits, ça apparaîtra ici.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Mes annonces -->
+<div class="card" style="margin-top:12px;">
+  <div class="page-head" style="margin:0 0 10px;">
+    <div>
+      <h3 style="margin:0;">Mes annonces</h3>
+      <p class="muted" style="margin:6px 0 0;">Gérez vos offres (voir, supprimer).</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/dashboard/annonces/new/">Nouvelle annonce</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    {% for l in my_listings %}
+      <div class="card" style="box-shadow:none; display:flex; gap:12px; align-items:flex-start;">
+
+        <!-- Mini photo -->
+        <div style="width:110px; flex:0 0 110px;">
+          {% with p=l.photos.first %}
+            {% if p %}
+              <img src="{{ p.image.url }}" alt="photo"
+                   style="width:110px; height:110px; object-fit:cover; border-radius:14px;">
+            {% else %}
+              <div style="width:110px; height:110px; border-radius:14px; border:1px dashed rgba(255,255,255,.18);
+                          display:flex; align-items:center; justify-content:center;" class="muted">
+                No photo
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <!-- Contenu annonce -->
+        <div style="flex:1;">
+          <div class="muted" style="font-size:13px;">
+            {{ l.city }} • {{ l.get_product_type_display }}
+          </div>
+
+          <h3 style="margin:8px 0 6px;">
+            <a href="/annonces/{{ l.id }}/">{{ l.title }}</a>
+          </h3>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <span class="tag">💰 {{ l.price_fcfa }} FCFA</span>
+            <span class="tag">📦 Qté: {{ l.quantity }}</span>
+            <span class="tag">📸 {{ l.photos.count }} photo{{ l.photos.count|pluralize }}</span>
+          </div>
+
+          <div class="muted" style="margin-top:10px;">
+            ⭐ {{ l.avg_rating|floatformat:1 }} / 5 ({{ l.reviews.count }} avis)
+          </div>
+
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn" href="/annonces/{{ l.id }}/">Voir</a>
+
+            <form method="post" action="/dashboard/annonces/{{ l.id }}/delete/" style="margin:0;">
+              {% csrf_token %}
+              <button class="btn" type="submit" onclick="return confirm('Supprimer cette annonce ?')">
+                Supprimer
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="box-shadow:none;">
+        <p class="muted" style="margin:0;">
+          Aucune annonce publiée pour le moment. Publie ta première annonce pour commencer à vendre.
+        </p>
+        <div style="margin-top:10px;">
+          <a class="btn btn-primary" href="/dashboard/annonces/new/">➕ Publier une annonce</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Paiement phase 2 (démo) -->
+<div class="card" style="margin-top:12px;">
+  <div class="page-head" style="margin:0 0 10px;">
+    <div>
+      <h3 style="margin:0;">Paiement (Phase 2 — démo)</h3>
+      <p class="muted" style="margin:6px 0 0;">
+        Base technique incluse. APIs MTN/Orange non branchées ici (mode démo).
+      </p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card" style="box-shadow:none;">
+      <h4 style="margin:0 0 10px;">Créer une transaction</h4>
+      <form method="post" action="/dashboard/payment/start/">
+        {% csrf_token %}
+        <label class="muted">Montant (FCFA)</label>
+        <input name="amount_fcfa" type="number" value="5000" min="100" style="margin:6px 0 12px;">
+
+        <label class="muted">Provider</label>
+        <select name="provider" style="margin:6px 0 12px;">
+          <option value="MTN_MOMO">MTN MoMo</option>
+          <option value="ORANGE_OM">Orange Money</option>
+        </select>
+
+        <button class="btn btn-primary" type="submit">Créer transaction (DEMO)</button>
+      </form>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <h4 style="margin:0 0 10px;">Comment simuler un succès</h4>
+      <p class="muted" style="margin:0;">
+        Après création, une <b>référence</b> s’affiche dans un message en haut.
+        Pour simuler un paiement réussi, ouvre :
+      </p>
+      <div class="card" style="margin-top:10px; box-shadow:none;">
+        <code style="color:rgba(255,255,255,.85);">/dashboard/payment/simulate/&lt;reference&gt;/</code>
+      </div>
+      <p class="muted" style="margin:10px 0 0;">
+        Exemple : <code style="color:rgba(255,255,255,.85);">/dashboard/payment/simulate/abc123/</code>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Notifications</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Mentions @username et alertes. Non lues : <b>{{ unread_count }}</b>
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/community/">Communauté</a>
+      <a class="btn" href="/community/dm/">DM</a>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  {% for n in notifs %}
+    <div style="border-top:1px solid rgba(255,255,255,.10); padding-top:10px; margin-top:10px;">
+      <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <div>
+          {% if not n.is_read %}<span class="tag ok">Nouveau</span>{% endif %}
+          <b>{{ n.get_kind_display }}</b> — <span class="muted">{{ n.text }}</span>
+        </div>
+        <div class="muted" style="font-size:12px;">{{ n.created_at }}</div>
+      </div>
+
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        {% if n.room and n.room_message %}
+          <a class="btn" href="/community/room/{{ n.room.slug }}/">Ouvrir salle</a>
+        {% elif n.conversation %}
+          <a class="btn" href="/community/dm/{{ n.conversation.id }}/">Ouvrir DM</a>
+        {% endif %}
+
+        {% if not n.is_read %}
+          <a class="btn btn-primary" href="/community/notifications/{{ n.id }}/read/">Marquer lu</a>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted" style="margin:0;">Aucune notification.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

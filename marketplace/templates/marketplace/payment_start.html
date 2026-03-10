@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Paiement — Commande #{{ order.id }}</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Total : <b>{{ order.total_fcfa }} FCFA</b> • Choisis MTN MoMo ou Orange Money.
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/orders/{{ order.id }}/">← Retour commande</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Démarrer le paiement</h3>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <label class="muted">Provider</label>
+      <select name="provider" style="margin:6px 0 12px;">
+        <option value="MTN_MOMO">MTN MoMo</option>
+        <option value="ORANGE_OM">Orange Money</option>
+      </select>
+
+      <label class="muted">Numéro du payeur</label>
+      <input name="payer_msisdn" placeholder="Ex: 2376XXXXXXX" required style="margin:6px 0 12px;">
+
+      <label class="muted">OTP / Code (Orange uniquement si demandé)</label>
+      <input name="otp_or_pin" placeholder="OTP ou code temporaire" style="margin:6px 0 12px;">
+
+      <button class="btn btn-primary" type="submit">Lancer le paiement</button>
+    </form>
+
+    <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+      <p class="muted" style="margin:0;">
+        MTN MoMo : tu reçois une demande sur ton téléphone à valider. :contentReference[oaicite:12]{index=12}
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Conseils</h3>
+    <p class="muted" style="margin:0;">
+      • En local, les callbacks ne marchent pas (utilise ngrok).<br>
+      • Clique sur “Vérifier statut” après validation sur téléphone.<br>
+      • Ne partage jamais ton code secret permanent.
+    </p>
+  </div>
+</div>
+
+{% endblock %}

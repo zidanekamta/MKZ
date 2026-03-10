@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Publier une annonce</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Ajoute une annonce claire avec de bonnes photos pour vendre plus vite.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/dashboard/">← Retour dashboard</a>
+      <a class="btn" href="/annonces/">Voir le marché</a>
+    </div>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="grid" style="margin-top:12px; align-items:start;">
+    <!-- Colonne principale -->
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Informations de l’annonce</h3>
+
+      <label class="muted">Titre</label>
+      <input name="title" placeholder="Ex: Lapins de chair disponibles (2–3 kg)" required style="margin:6px 0 12px;">
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+        <div>
+          <label class="muted">Type</label>
+          <select name="product_type" style="margin:6px 0 0;">
+            <option value="LIVE">Lapin vivant</option>
+            <option value="MEAT">Viande</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="muted">Ville</label>
+          <input name="city" placeholder="Ex: Douala" required style="margin:6px 0 0;">
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:12px;">
+        <div>
+          <label class="muted">Prix (FCFA)</label>
+          <input name="price_fcfa" type="number" min="1" placeholder="Ex: 3500" required style="margin:6px 0 0;">
+          <div class="muted" style="font-size:12px; margin-top:6px;">Indique un prix clair (ex: prix/unité ou prix/kg).</div>
+        </div>
+
+        <div>
+          <label class="muted">Quantité</label>
+          <input name="quantity" type="number" value="1" min="1" required style="margin:6px 0 0;">
+          <div class="muted" style="font-size:12px; margin-top:6px;">Nombre disponible actuellement.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label class="muted">WhatsApp</label>
+        <input name="whatsapp" placeholder="Ex: 2376XXXXXXX (sans +, sans espaces)" required style="margin:6px 0 0;">
+        <div class="muted" style="font-size:12px; margin-top:6px;">
+          Ce numéro sera utilisé pour le bouton “Contacter sur WhatsApp”.
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label class="muted">Description</label>
+        <textarea name="description" placeholder="Décris la race, le poids/âge, l’état sanitaire, le mode d’élevage, la disponibilité, etc."
+                  style="margin:6px 0 0;"></textarea>
+        <div class="muted" style="font-size:12px; margin-top:6px;">
+          Conseil : “race + poids + âge + disponibilité + livraison/ramassage”.
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" type="submit">✅ Publier l’annonce</button>
+        <a class="btn" href="/dashboard/">Annuler</a>
+      </div>
+    </div>
+
+    <!-- Colonne secondaire (Photos + conseils) -->
+    <div>
+      <div class="card">
+        <h3 style="margin:0 0 10px;">Photos</h3>
+
+        <label class="muted">Photos multiples</label>
+        <input name="photos" type="file" accept="image/*" multiple style="margin:8px 0 0;">
+
+        <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+          <p class="muted" style="margin:0;">
+            📸 Mets 3 à 5 photos :<br>
+            • vue du lapin / lot<br>
+            • cage / environnement<br>
+            • gros plan (qualité)<br>
+            • si viande : emballage / découpe
+          </p>
+        </div>
+
+        <div class="card" style="margin-top:12px; box-shadow:none;">
+          <h4 style="margin:0 0 8px;">Checklist rapide</h4>
+          <p class="muted" style="margin:0;">
+            ✅ Titre clair<br>
+            ✅ Ville correcte<br>
+            ✅ Prix + quantité<br>
+            ✅ WhatsApp valide<br>
+            ✅ Photos nettes
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <h3 style="margin:0 0 10px;">Aide</h3>
+        <p class="muted" style="margin:0;">
+          Après publication, ton annonce apparaît dans “Annonces”.
+          Les acheteurs peuvent te contacter directement sur WhatsApp.
+        </p>
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}

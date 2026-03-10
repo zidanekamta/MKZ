@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Statut Paiement</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Commande #{{ order.id }} • Provider: <b>{{ tx.get_provider_display }}</b> • Statut: <b>{{ tx.get_status_display }}</b>
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/orders/{{ order.id }}/">Voir commande</a>
+      <a class="btn" href="/annonces/">Continuer achats</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px; align-items:start;">
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Détails</h3>
+    <div class="muted">Référence: <b>{{ tx.reference }}</b></div>
+    <div class="muted" style="margin-top:8px;">Montant: <b>{{ tx.amount_fcfa }} {{ tx.currency }}</b></div>
+    <div class="muted" style="margin-top:8px;">Numéro: <b>{{ tx.payer_msisdn }}</b></div>
+
+    <form method="post" style="margin-top:12px;">
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit">🔄 Vérifier statut</button>
+    </form>
+
+    {% if tx.status == "SUCCESS" %}
+      <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+        <p class="muted" style="margin:0;">✅ Paiement confirmé. La commande est maintenant confirmée.</p>
+      </div>
+    {% elif tx.status == "FAILED" %}
+      <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+        <p class="muted" style="margin:0;">❌ Paiement échoué. Tu peux réessayer.</p>
+        <div style="margin-top:10px;">
+          <a class="btn btn-primary" href="/payments/start/{{ order.id }}/">Réessayer</a>
+        </div>
+      </div>
+    {% else %}
+      <div class="card" style="margin-top:12px; box-shadow:none; border-style:dashed;">
+        <p class="muted" style="margin:0;">⏳ En attente… valide la demande sur ton téléphone puis clique “Vérifier statut”.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px;">Debug (optionnel)</h3>
+    <pre style="white-space:pre-wrap; margin:0; font-size:12px; color:rgba(255,255,255,.85);">{{ tx.raw_response|default:"" }}</pre>
+  </div>
+</div>
+
+{% endblock %}

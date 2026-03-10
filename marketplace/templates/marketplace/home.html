@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:22px;">
+  <div class="page-head" style="margin:0 0 12px;">
+    <div>
+      <h1 class="page-title" style="font-size:34px; margin:0;">MKZ</h1>
+      <p class="page-subtitle">
+        Marketplace lapin au Cameroun — <b>Éleveurs</b> ↔ <b>Acheteurs</b> (lapin vivant & viande)
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/annonces/">Voir les annonces</a>
+      {% if user.is_authenticated %}
+        <a class="btn" href="/dashboard/">Mon dashboard</a>
+      {% else %}
+        <a class="btn" href="/accounts/login/">Connexion</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:14px;">
+    <div class="card" style="box-shadow:none;">
+      <div class="muted" style="font-size:13px;">Pourquoi MKZ ?</div>
+      <h3 style="margin:8px 0 6px;">Acheter plus vite, vendre plus facilement</h3>
+      <p class="muted" style="margin:0;">
+        Trouve des lapins disponibles près de chez toi, contacte l’éleveur sur WhatsApp, et passe commande.
+        MKZ enregistre aussi tes commandes pour un suivi simple.
+      </p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="muted" style="font-size:13px;">Phase actuelle</div>
+      <h3 style="margin:8px 0 6px;">Paiement à la livraison / WhatsApp</h3>
+      <p class="muted" style="margin:0;">
+        Phase 1 : mise en relation et commandes enregistrées.<br>
+        Phase 2 : paiement Mobile Money (MTN MoMo / Orange Money).
+      </p>
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="tag">Phase 1</span>
+        <span class="tag">Commandes</span>
+        <span class="tag">WhatsApp</span>
+      </div>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="muted" style="font-size:13px;">Confiance</div>
+      <h3 style="margin:8px 0 6px;">Éleveurs vérifiés & avis</h3>
+      <p class="muted" style="margin:0;">
+        Les éleveurs peuvent être <b>vérifiés</b> par l’admin MKZ. Les acheteurs laissent des <b>notes</b> et <b>avis</b> sur les annonces.
+      </p>
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="tag ok">Éleveur vérifié</span>
+        <span class="tag">Avis / Notes</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="grid" style="margin-top:12px;">
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Offres</div>
+    <div style="font-size:26px; font-weight:800; margin-top:4px;">Lapins vivants</div>
+    <div class="muted">Reproduction • chair • lapereaux</div>
+  </div>
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Produits</div>
+    <div style="font-size:26px; font-weight:800; margin-top:4px;">Viande de lapin</div>
+    <div class="muted">Frais • découpé • surgelé</div>
+  </div>
+  <div class="card">
+    <div class="muted" style="font-size:13px;">Communauté</div>
+    <div style="font-size:26px; font-weight:800; margin-top:4px;">Éleveurs & acheteurs</div>
+    <div class="muted">Notes • avis • profils</div>
+  </div>
+</div>
+
+<!-- Comment ça marche -->
+<div class="card" style="margin-top:12px;">
+  <h2 class="page-title" style="margin:0 0 6px;">Comment ça marche</h2>
+  <p class="muted" style="margin:0 0 12px;">Simple, rapide, efficace.</p>
+
+  <div class="grid">
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">1</div>
+      <h3 style="margin:10px 0 6px;">Recherche</h3>
+      <p class="muted" style="margin:0;">Filtre par ville, type (vivant/viande) et prix.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">2</div>
+      <h3 style="margin:10px 0 6px;">Ajoute au panier</h3>
+      <p class="muted" style="margin:0;">Clique “Acheter maintenant” sur l’annonce et ajoute la quantité.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">3</div>
+      <h3 style="margin:10px 0 6px;">Commande enregistrée</h3>
+      <p class="muted" style="margin:0;">Confirme la livraison : MKZ enregistre la commande pour le suivi.</p>
+    </div>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="tag">4</div>
+      <h3 style="margin:10px 0 6px;">Paiement</h3>
+      <p class="muted" style="margin:0;">Phase 1 : paiement à la livraison / WhatsApp. Phase 2 : MoMo/OM.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA final -->
+<div class="card" style="margin-top:12px;">
+  <div class="grid" style="align-items:center;">
+    <div>
+      <h2 class="page-title" style="margin:0 0 6px;">Prêt à commencer ?</h2>
+      <p class="muted" style="margin:0;">
+        Consulte les annonces ou crée ton compte pour publier (éleveur) / commander (acheteur).
+      </p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn btn-primary" href="/annonces/">Explorer les annonces</a>
+      {% if user.is_authenticated %}
+        <a class="btn" href="/dashboard/">Aller au dashboard</a>
+      {% else %}
+        <a class="btn" href="/accounts/signup/">Créer un compte</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

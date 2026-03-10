@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Mes commandes</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">Historique de tes commandes MKZ.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/annonces/">Explorer les annonces</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px;">
+  {% for o in orders %}
+    <div class="card" style="box-shadow:none;">
+      <div class="muted" style="font-size:13px;">Commande #{{ o.id }}</div>
+      <div style="font-size:20px; font-weight:800; margin-top:6px;">{{ o.total_fcfa }} FCFA</div>
+      <div class="muted" style="margin-top:6px;">{{ o.get_status_display }}</div>
+      <div class="muted" style="margin-top:6px;">{{ o.created_at }}</div>
+
+      <div style="margin-top:12px;">
+        <a class="btn btn-primary" href="/orders/{{ o.id }}/">Détails</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card">
+      <p class="muted" style="margin:0;">Aucune commande.</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

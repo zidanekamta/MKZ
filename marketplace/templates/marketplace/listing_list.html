@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Header -->
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Annonces</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">
+        Trouve des lapins vivants ou de la viande près de chez toi, puis commande en quelques clics.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      {% if user.is_authenticated %}
+        <a class="btn" href="/cart/">Panier</a>
+        <a class="btn" href="/orders/">Mes commandes</a>
+      {% else %}
+        <a class="btn" href="/accounts/login/">Connexion</a>
+        <a class="btn btn-primary" href="/accounts/signup/">Inscription</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Filtres -->
+<div class="card" style="margin-top:12px;">
+  <form method="get">
+    <div class="grid" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; align-items:end;">
+      <div>
+        <label class="muted">Recherche</label>
+        <input name="q" placeholder="Ex: lapin chair, reproducteur..." value="{{ request.GET.q }}" style="margin-top:6px;">
+      </div>
+
+      <div>
+        <label class="muted">Ville</label>
+        <input name="city" placeholder="Ex: Douala" value="{{ request.GET.city }}" style="margin-top:6px;">
+      </div>
+
+      <div>
+        <label class="muted">Type</label>
+        <select name="type" style="margin-top:6px;">
+          <option value="">Tous</option>
+          <option value="LIVE" {% if request.GET.type == "LIVE" %}selected{% endif %}>Lapin vivant</option>
+          <option value="MEAT" {% if request.GET.type == "MEAT" %}selected{% endif %}>Viande</option>
+        </select>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="btn btn-primary" type="submit">Filtrer</button>
+        <a class="btn" href="/annonces/">Réinitialiser</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="muted" style="margin-top:10px;">
+    {{ listings|length }} annonce{{ listings|length|pluralize }} trouvée{{ listings|length|pluralize }}.
+  </div>
+</div>
+
+<!-- Liste annonces -->
+<div class="grid" style="margin-top:12px;">
+  {% for l in listings %}
+    <div class="card" style="box-shadow:none; display:flex; gap:12px; align-items:flex-start;">
+
+      <!-- Mini photo -->
+      <div style="width:120px; flex:0 0 120px;">
+        {% with p=l.photos.first %}
+          {% if p %}
+            <img src="{{ p.image.url }}" alt="photo"
+                 style="width:120px; height:120px; object-fit:cover; border-radius:14px;">
+          {% else %}
+            <div style="width:120px; height:120px; border-radius:14px; border:1px dashed rgba(255,255,255,.18);
+                        display:flex; align-items:center; justify-content:center;" class="muted">
+              No photo
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Contenu -->
+      <div style="flex:1;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span class="tag">📍 {{ l.city }}</span>
+          <span class="tag">{{ l.get_product_type_display }}</span>
+          <span class="tag">📸 {{ l.photos.count }}</span>
+
+          <!-- Badge éleveur vérifié (safe) -->
+          {% if l.breeder.profile.verified %}
+            <span class="tag ok">✅ Éleveur vérifié</span>
+          {% endif %}
+        </div>
+
+        <h3 style="margin:10px 0 6px;">
+          <a href="/annonces/{{ l.id }}/">{{ l.title }}</a>
+        </h3>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="tag">💰 {{ l.price_fcfa }} FCFA</span>
+          <span class="tag">📦 Qté: {{ l.quantity }}</span>
+          <span class="tag">⭐ {{ l.avg_rating|floatformat:1 }} / 5 ({{ l.reviews.count }} avis)</span>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn" href="/annonces/{{ l.id }}/">Voir</a>
+
+          {% if user.is_authenticated %}
+            <form method="post" action="/cart/add/{{ l.id }}/" style="margin:0;">
+              {% csrf_token %}
+              <input type="hidden" name="quantity" value="1">
+              <button class="btn btn-primary" type="submit">Acheter maintenant</button>
+            </form>
+          {% else %}
+            <a class="btn btn-primary" href="/accounts/login/">Se connecter pour acheter</a>
+          {% endif %}
+        </div>
+
+        <div class="muted" style="margin-top:10px;">
+          Contact rapide : <a href="{{ l.whatsapp_link }}" target="_blank">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card">Aucune annonce.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

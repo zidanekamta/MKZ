@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Communauté MKZ</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">Groupes + messages privés + notifications.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/community/notifications/">Notifications</a>
+      <a class="btn" href="/community/dm/">Messages privés</a>
+      <a class="btn" href="/dashboard/">Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px;">
+  {% for r in rooms %}
+    <div class="card" style="box-shadow:none;">
+      <div class="muted" style="font-size:13px;">Salle</div>
+      <h3 style="margin:8px 0 6px;">{{ r.name }}</h3>
+      <p class="muted" style="margin:0;">{{ r.description|default:"" }}</p>
+
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="tag">Visibilité: {{ r.get_visibility_display }}</span>
+        <span class="tag">Écriture: {{ r.get_post_permission_display }}</span>
+      </div>
+
+      <div style="margin-top:12px;">
+        <a class="btn btn-primary" href="/community/room/{{ r.slug }}/">Entrer</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card">Aucune salle disponible.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

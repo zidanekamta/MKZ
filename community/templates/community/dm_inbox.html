@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card" style="padding:18px;">
+  <div class="page-head" style="margin:0;">
+    <div>
+      <h2 class="page-title" style="margin:0;">Messages privés</h2>
+      <p class="page-subtitle" style="margin:6px 0 0;">Tes conversations 1–1.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+      <a class="btn" href="/community/">Communauté</a>
+      <a class="btn" href="/community/notifications/">Notifications</a>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+  <p class="muted" style="margin:0;">
+    Pour démarrer une conversation : ouvre un profil utilisateur (ou donne son username) via
+    <code>/community/dm/start/&lt;username&gt;/</code>
+  </p>
+</div>
+
+<div class="grid" style="margin-top:12px;">
+  {% for c in convs %}
+    <div class="card" style="box-shadow:none;">
+      <div class="muted">Conversation</div>
+      <h3 style="margin:8px 0 6px;">
+        {% if c.user1_id == user.id %}{{ c.user2.username }}{% else %}{{ c.user1.username }}{% endif %}
+      </h3>
+      <div class="muted">Dernière activité: {{ c.updated_at }}</div>
+      <div style="margin-top:12px;">
+        <a class="btn btn-primary" href="/community/dm/{{ c.id }}/">Ouvrir</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card">Aucune conversation.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}
