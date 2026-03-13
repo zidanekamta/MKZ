@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import django_heroku
 
 load_dotenv()
 
@@ -54,17 +55,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "MKZ.wsgi.application"
 ASGI_APPLICATION = "MKZ.asgi.application"
 
-# MySQL/MariaDB (XAMPP)
+# Database
+import dj_database_url
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DB_NAME", "rabbit_market"),
-        "USER": os.getenv("DB_USER", "root"),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
-        "PORT": os.getenv("DB_PORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4"},
-    }
+    "default": dj_database_url.config(default="sqlite:///db.sqlite3")
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -90,3 +84,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
+
+# Configure Django for Heroku
+django_heroku.settings(locals())
