@@ -56,9 +56,11 @@ WSGI_APPLICATION = "MKZ.wsgi.application"
 ASGI_APPLICATION = "MKZ.asgi.application"
 
 # Database
-import dj_database_url
 DATABASES = {
-    "default": dj_database_url.config(default="sqlite:///db.sqlite3")
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [

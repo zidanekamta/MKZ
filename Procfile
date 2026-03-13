@@ -1,1 +1,0 @@
-web: gunicorn MKZ.wsgi --log-file -
